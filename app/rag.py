@@ -1,6 +1,7 @@
 import chromadb
 from sentence_transformers import SentenceTransformer
 from pypdf import PdfReader
+from app.llm import ask_ollama
 
 model = SentenceTransformer("all-MiniLM-L6-v2")
 
@@ -32,3 +33,8 @@ def search(query: str, n_results: int = 3) -> list:
         n_results=n_results
     )
     return results["documents"][0]
+
+def ask(question: str) -> str:
+    context = search(question)
+    prompt = f"Bağlam: {context}\n\nSoru: {question}\n\nCevap:"
+    return ask_ollama(prompt)
