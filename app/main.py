@@ -30,3 +30,9 @@ def upload_document(file: UploadFile = File(...)):
     add_document(file_path, doc_id)
     
     return {"message": f"{file.filename} başarıyla yüklendi."}
+
+@app.get("/documents")
+def list_documents():
+    files = os.listdir("docs")
+    pdfs = [f for f in files if f.endswith(".pdf")]
+    return {"documents": pdfs}
