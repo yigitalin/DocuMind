@@ -10,15 +10,39 @@ class AskRequest(BaseModel):
 
 @app.get("/health")
 def health_check():
+    """
+    Servisin çalışıp çalışmadığını kontrol eder.
+
+    Returns:
+        Servis durumunu gösteren JSON
+    """
     return {"status": "ok"}
 
 @app.post("/ask")
 def ask_question(request: AskRequest):
+    """
+    Kullanıcının sorusunu alır ve cevap döndürür.
+
+    Args:
+        request: Kullanıcının sorusunu içeren istek
+
+    Returns:
+        Ollama'nın ürettiği cevap
+    """
     answer = ask(request.question)
     return {"answer": answer}
 
 @app.post("/upload")
 def upload_document(file: UploadFile = File(...)):
+    """
+    PDF dosyasını yükler ve ChromaDB'ye kaydeder.
+
+    Args:
+        file: Yüklenen PDF dosyası
+
+    Returns:
+        Yükleme başarı mesajı
+    """
     if not file.filename.endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Sadece PDF dosyası yüklenebilir.")
     
@@ -33,6 +57,12 @@ def upload_document(file: UploadFile = File(...)):
 
 @app.get("/documents")
 def list_documents():
+    """
+    Yüklenen dokümanları listeler.
+
+    Returns:
+        Yüklü PDF dosyalarının listesi
+    """
     files = os.listdir("docs")
     pdfs = [f for f in files if f.endswith(".pdf")]
     return {"documents": pdfs}
