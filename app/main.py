@@ -12,3 +12,7 @@ class AskRequest(BaseModel):
 def health_check():
     return {"status": "ok"}
 
+@app.post("/ask")
+def ask_question(request: AskRequest):
+    answer = ask(request.question)
+    return {"answer": answer}
