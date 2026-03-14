@@ -10,6 +10,16 @@ client = chromadb.PersistentClient(path="chroma_db")
 collection = client.get_or_create_collection("documents")
 
 def add_document(file_path: str, doc_id: str) -> None:
+    """
+    PDF dosyasını okur ve ChromaDB'ye kaydeder.
+
+    Args:
+        file_path: PDF dosyasının yolu
+        doc_id: Dokümanın benzersiz kimliği
+
+    Returns:
+        None
+    """
     reader = PdfReader(file_path)
     
     text = ""
@@ -27,6 +37,16 @@ def add_document(file_path: str, doc_id: str) -> None:
     )
 
 def search(query: str, n_results: int = 3) -> list:
+    """
+    Soruya en benzer doküman parçalarını ChromaDB'den bulur.
+
+    Args:
+        query: Arama sorgusu
+        n_results: Döndürülecek sonuç sayısı
+
+    Returns:
+        En benzer doküman parçalarının listesi
+    """
     query_embedding = model.encode([query]).tolist()[0]
     results = collection.query(
         query_embeddings = [query_embedding],
@@ -35,6 +55,15 @@ def search(query: str, n_results: int = 3) -> list:
     return results["documents"][0]
 
 def ask(question: str) -> str:
+    """
+    Kullanıcının sorusunu cevaplar.
+
+    Args:
+        question: Kullanıcının sorusu
+
+    Returns:
+        Ollama'nın ürettiği cevap metni
+    """
     context = search(question)
     prompt = f"Bağlam: {context}\n\nSoru: {question}\n\nCevap:"
     return ask_ollama(prompt)
