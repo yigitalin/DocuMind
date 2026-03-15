@@ -29,6 +29,8 @@ def ask_question(request: AskRequest):
     Returns:
         Ollama'nın ürettiği cevap
     """
+    if not request.question.strip():
+        raise HTTPException(status_code=422, detail="Soru boş olamaz.")
     answer = ask(request.question)
     return {"answer": answer}
 
