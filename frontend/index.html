@@ -380,18 +380,22 @@
         }
 
         async function checkHealth() {
-            try {
-                const res = await fetch(`${API}/health`);
-                const data = await res.json();
-                if (data.status === "ok") {
-                    document.getElementById("dot").classList.add("online");
-                    document.getElementById("status-text").textContent = "Servis Çalışıyor";
-                }
-            } catch {
-                document.getElementById("dot").classList.add("offline");
-                document.getElementById("status-text").textContent = "Servis Kapalı";
-            }
+    try {
+        const res = await fetch(`${API}/health`);
+        const data = await res.json();
+        if (data.status === "ok") {
+            document.getElementById("dot").classList.remove("offline");
+            document.getElementById("dot").classList.add("online");
+            document.getElementById("status-text").textContent = "Servis Çalışıyor";
+            return true;
         }
+    } catch {
+        document.getElementById("dot").classList.remove("online");
+        document.getElementById("dot").classList.add("offline");
+        document.getElementById("status-text").textContent = "Servis Kapalı - Bağlanıyor...";
+        setTimeout(checkHealth, 3000);
+    }
+}
 
         async function loadDocuments() {
             try {
