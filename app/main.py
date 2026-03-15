@@ -76,3 +76,20 @@ def list_documents():
     files = os.listdir("docs")
     pdfs = [f for f in files if f.endswith(".pdf")]
     return {"documents": pdfs}
+
+@app.delete("/documents/{filename}")
+def delete_document(filename: str):
+    """
+    Belirtilen dokümanı siler.
+
+    Args:
+        filename: Silinecek dosyanın adı
+
+    Returns:
+        Silme başarı mesajı
+    """
+    file_path = f"docs/{filename}"
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="Dosya bulunamadı.")
+    os.remove(file_path)
+    return {"message": f"{filename} silindi."}
