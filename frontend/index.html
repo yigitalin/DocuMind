@@ -41,69 +41,83 @@
         .container { display: flex; height: 100vh; }
 
         .sidebar {
-            width: 300px;
+            width: 280px;
+            min-width: 280px;
             background: var(--sidebar-bg);
             border-right: 1px solid var(--border);
             display: flex;
             flex-direction: column;
             padding: 24px;
             gap: 16px;
-            overflow-y: auto;
+            overflow: hidden;
             z-index: 1;
-            transition: background 0.3s;
+            transition: width 0.3s, min-width 0.3s, padding 0.3s, background 0.3s;
+        }
+
+        .sidebar.closed {
+            width: 0;
+            min-width: 0;
+            padding: 0;
         }
 
         .sidebar-header { display: flex; align-items: center; gap: 10px; }
 
         .sidebar h1 {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             background: linear-gradient(135deg, #60a5fa, #a78bfa);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            white-space: nowrap;
         }
 
-        .sidebar p { color: var(--text-muted); font-size: 0.85rem; margin-top: 4px; }
+        .sidebar > p { color: var(--text-muted); font-size: 0.85rem; margin-top: 4px; white-space: nowrap; }
 
         .status { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; margin-top: 4px; }
 
-        .dot { width: 8px; height: 8px; border-radius: 50%; background-color: #888; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; background-color: #888; flex-shrink: 0; }
         .dot.online { background-color: #22c55e; }
         .dot.offline { background-color: #ef4444; }
 
-        .divider { border: none; border-top: 1px solid var(--border); }
+        .divider { border: none; border-top: 1px solid var(--border); flex-shrink: 0; }
 
-        .sidebar h2 { font-size: 0.95rem; color: var(--text); margin-bottom: 12px; }
+        .sidebar h2 { font-size: 0.9rem; color: var(--text); margin-bottom: 8px; white-space: nowrap; }
 
         .upload-box {
             border: 2px dashed var(--border);
             border-radius: 12px;
-            padding: 16px;
+            padding: 12px;
             text-align: center;
             background: var(--bg);
-            margin-bottom: 8px;
             transition: border-color 0.2s;
+            flex-shrink: 0;
         }
 
         .upload-box:hover { border-color: var(--accent); }
-        .upload-box p { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 10px; }
+        .upload-box p { color: var(--text-muted); font-size: 0.8rem; margin-bottom: 8px; }
 
         .btn {
             background: var(--accent);
             color: white;
             border: none;
-            padding: 8px 20px;
+            padding: 7px 16px;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             transition: background 0.2s;
         }
 
         .btn:hover { background: var(--accent-hover); }
 
-        #upload-message { font-size: 0.85rem; margin-top: 8px; }
+        #upload-message { font-size: 0.8rem; margin-top: 6px; flex-shrink: 0; }
 
-        #documents-list { list-style: none; color: var(--text-muted); font-size: 0.85rem; }
-        #documents-list li { padding: 5px 0; border-bottom: 1px solid var(--border); }
+        #documents-list { list-style: none; color: var(--text-muted); font-size: 0.8rem; }
+        #documents-list li {
+            padding: 4px 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
         .theme-btn {
             background: none;
@@ -112,8 +126,10 @@
             padding: 6px 12px;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             transition: all 0.2s;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
 
         .theme-btn:hover { border-color: var(--accent); }
@@ -122,9 +138,33 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            padding: 24px;
+            padding: 16px 24px 24px 24px;
             position: relative;
+            overflow: hidden;
         }
+
+        .top-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+            z-index: 1;
+            flex-shrink: 0;
+        }
+
+        .toggle-btn {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 8px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .toggle-btn:hover { border-color: var(--accent); }
 
         #bg-canvas {
             position: absolute;
@@ -193,6 +233,7 @@
             border-top: 1px solid var(--border);
             position: relative;
             z-index: 1;
+            flex-shrink: 0;
         }
 
         .ask-input-box textarea {
@@ -262,13 +303,13 @@
 </head>
 <body>
     <div class="container">
-        <div class="sidebar">
+        <div class="sidebar" id="sidebar">
             <div>
                 <div class="sidebar-header">
                     <canvas id="logo-canvas" width="36" height="36"></canvas>
                     <h1>DocuMind</h1>
                 </div>
-                <p>Yerel yapay zeka ile doküman soru-cevap servisi</p>
+                <p style="color: var(--text-muted); font-size: 0.75rem; margin-top: 4px; line-height: 1.4;">Yerel yapay zeka ile doküman soru-cevap servisi</p>
                 <div class="status">
                     <span class="dot" id="dot"></span>
                     <span id="status-text">Kontrol ediliyor...</span>
@@ -301,6 +342,9 @@
 
         <div class="main">
             <canvas id="bg-canvas"></canvas>
+            <div class="top-bar">
+                <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+            </div>
             <div class="chat-box" id="chat-box">
                 <div class="welcome-message" id="welcome">
                     <h2>Merhaba! 👋</h2>
@@ -309,10 +353,7 @@
             </div>
             <div class="ask-input-box">
                 <textarea id="question-input" placeholder="Sorunuzu buraya yazın..."></textarea>
-                <div style="display:flex; flex-direction:column; gap:8px;">
-                    <button id="ask-button">➤ Gönder</button>
-                    <button onclick="clearChat()" style="background:#334155; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer; font-size:0.8rem;">🗑 Temizle</button>
-                </div>
+                <button id="ask-button">➤ Gönder</button>
             </div>
         </div>
     </div>
@@ -320,19 +361,17 @@
     <script>
         const API = "http://localhost:8000";
         let isLight = false;
+        let sidebarOpen = true;
+
+        function toggleSidebar() {
+            sidebarOpen = !sidebarOpen;
+            document.getElementById("sidebar").classList.toggle("closed", !sidebarOpen);
+        }
 
         function toggleTheme() {
             isLight = !isLight;
             document.body.classList.toggle("light", isLight);
             document.querySelector(".theme-btn").textContent = isLight ? "🌙 Koyu Tema" : "☀️ Açık Tema";
-        }
-
-        function clearChat() {
-            const chatBox = document.getElementById("chat-box");
-            chatBox.innerHTML = `<div class="welcome-message" id="welcome">
-                <h2>Merhaba! 👋</h2>
-                <p>Sol taraftan bir PDF yükleyin ve soru sormaya başlayın.</p>
-            </div>`;
         }
 
         function getTime() {
@@ -362,8 +401,20 @@
                 if (data.documents.length === 0) {
                     list.innerHTML = "<li>Henüz doküman yüklenmedi.</li>";
                 } else {
-                    list.innerHTML = data.documents.map(d => `<li>📄 ${d}</li>`).join("");
+                    list.innerHTML = data.documents.map(d => `
+                        <li>
+                            <span>📄 ${d}</span>
+                            <button onclick="deleteDocument('${d}')" style="background:#ef4444; color:white; border:none; padding:3px 8px; border-radius:6px; cursor:pointer; font-size:0.75rem;">🗑</button>
+                        </li>`).join("");
                 }
+            } catch {}
+        }
+
+        async function deleteDocument(filename) {
+            if (!confirm(`"${filename}" silinsin mi?`)) return;
+            try {
+                const res = await fetch(`${API}/documents/${filename}`, { method: "DELETE" });
+                if (res.ok) loadDocuments();
             } catch {}
         }
 
@@ -498,10 +549,8 @@
             const cx = canvas.width / 2;
             const cy = canvas.height / 2;
             const r = Math.min(canvas.width, canvas.height) * 0.35;
-
             ctx.strokeStyle = "rgba(99, 102, 241, 1)";
             ctx.lineWidth = 0.8;
-
             for (let i = 0; i < points.length; i++) {
                 for (let j = i + 1; j < points.length; j++) {
                     const x1 = cx + r * Math.cos(points[i].angle + rotation);
@@ -514,13 +563,11 @@
                     ctx.stroke();
                 }
             }
-
             ctx.strokeStyle = "rgba(99, 102, 241, 1)";
             ctx.lineWidth = 1.2;
             ctx.beginPath();
             ctx.arc(cx, cy, r, 0, Math.PI * 2);
             ctx.stroke();
-
             rotation += 0.003;
             requestAnimationFrame(drawAnimation);
         }
