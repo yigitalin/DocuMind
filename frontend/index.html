@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DocuMind</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: #1e2a3a;
+            color: #ffffff;
+            font-family: 'Segoe UI', sans-serif;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* SOL PANEL */
+        .sidebar {
+            width: 300px;
+            background: #162030;
+            border-right: 1px solid #ffffff15;
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+            gap: 24px;
+        }
+
+        .sidebar h1 {
+            font-size: 1.8rem;
+            color: #ffffff;
+        }
+
+        .sidebar p {
+            color: #888;
+            font-size: 0.85rem;
+            margin-top: 4px;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #888;
+        }
+
+        .dot.online { background-color: #22c55e; }
+        .dot.offline { background-color: #ef4444; }
+
+        .divider {
+            border: none;
+            border-top: 1px solid #ffffff15;
+        }
+
+        .sidebar h2 {
+            font-size: 0.95rem;
+            color: #cbd5e1;
+            margin-bottom: 12px;
+        }
+
+        .upload-box {
+            border: 2px dashed #ffffff30;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            background: #1e2a3a;
+            margin-bottom: 8px;
+        }
+
+        .upload-box p {
+            color: #888;
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+        }
+
+        .upload-box button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .upload-box button:hover { background: #2563eb; }
+
+        #upload-message {
+            font-size: 0.85rem;
+            margin-top: 8px;
+        }
+
+        #documents-list {
+            list-style: none;
+            color: #888;
+            font-size: 0.85rem;
+        }
+
+        #documents-list li {
+            padding: 5px 0;
+            border-bottom: 1px solid #ffffff10;
+        }
+
+        /* SAĞ PANEL - SOHBET */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+        }
+
+        .chat-box {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .chat-message.user {
+            text-align: right;
+        }
+
+        .chat-message.user span {
+            background: #3b82f6;
+            padding: 10px 16px;
+            border-radius: 16px 16px 4px 16px;
+            display: inline-block;
+            max-width: 70%;
+        }
+
+        .chat-message.bot span {
+            background: #162030;
+            padding: 10px 16px;
+            border-radius: 16px 16px 16px 4px;
+            display: inline-block;
+            max-width: 70%;
+            color: #cbd5e1;
+        }
+
+        .ask-input-box {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+            padding-top: 16px;
+            border-top: 1px solid #ffffff15;
+        }
+
+        .ask-input-box textarea {
+            flex: 1;
+            background: #162030;
+            border: 1px solid #ffffff20;
+            border-radius: 12px;
+            padding: 12px;
+            color: #ffffff;
+            font-size: 0.95rem;
+            resize: none;
+            height: 50px;
+        }
+
+        .ask-input-box button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .ask-input-box button:hover { background: #2563eb; }
+
+        .welcome-message {
+            text-align: center;
+            color: #888;
+            margin: auto;
+        }
+
+        .welcome-message h2 {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+            color: #cbd5e1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- SOL PANEL -->
+        <div class="sidebar">
+            <div>
+                <h1>DocuMind</h1>
+                <p>Yerel yapay zeka ile doküman soru-cevap servisi</p>
+                <div class="status" style="margin-top: 8px;">
+                    <span class="dot" id="dot"></span>
+                    <span id="status-text">Kontrol ediliyor...</span>
+                </div>
+            </div>
+
+            <hr class="divider">
+
+            <div>
+                <h2>📂 Doküman Yükle</h2>
+                <div class="upload-box">
+                    <input type="file" id="file-input" accept=".pdf" hidden>
+                    <p>PDF dosyası seç</p>
+                    <button onclick="document.getElementById('file-input').click()">Dosya Seç</button>
+                </div>
+                <div id="upload-message"></div>
+            </div>
+
+            <hr class="divider">
+
+            <div>
+                <h2>📄 Yüklü Dokümanlar</h2>
+                <ul id="documents-list">
+                    <li>Henüz doküman yüklenmedi.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- SAĞ PANEL -->
+        <div class="main">
+            <div class="chat-box" id="chat-box">
+                <div class="welcome-message">
+                    <h2>Merhaba! 👋</h2>
+                    <p>Sol taraftan bir PDF yükleyin ve soru sormaya başlayın.</p>
+                </div>
+            </div>
+            <div class="ask-input-box">
+                <textarea id="question-input" placeholder="Sorunuzu buraya yazın..."></textarea>
+                <button id="ask-button">➤ Gönder</button>
+            </div>
+        </div>
+    </div>
+<script>
+        const API = "http://localhost:8000";
+
+        // Servis durumunu kontrol et
+        async function checkHealth() {
+            try {
+                const res = await fetch(`${API}/health`);
+                const data = await res.json();
+                if (data.status === "ok") {
+                    document.getElementById("dot").classList.add("online");
+                    document.getElementById("status-text").textContent = "Servis Çalışıyor";
+                }
+            } catch {
+                document.getElementById("dot").classList.add("offline");
+                document.getElementById("status-text").textContent = "Servis Kapalı";
+            }
+        }
+
+        // Dokümanları listele
+        async function loadDocuments() {
+            try {
+                const res = await fetch(`${API}/documents`);
+                const data = await res.json();
+                const list = document.getElementById("documents-list");
+                if (data.documents.length === 0) {
+                    list.innerHTML = "<li>Henüz doküman yüklenmedi.</li>";
+                } else {
+                    list.innerHTML = data.documents.map(d => `<li>📄 ${d}</li>`).join("");
+                }
+            } catch {}
+        }
+
+        // PDF yükle
+        document.getElementById("file-input").addEventListener("change", async function() {
+            const file = this.files[0];
+            if (!file) return;
+            const formData = new FormData();
+            formData.append("file", file);
+            const msg = document.getElementById("upload-message");
+            msg.textContent = "Yükleniyor...";
+            try {
+                const res = await fetch(`${API}/upload`, { method: "POST", body: formData });
+                const data = await res.json();
+                msg.style.color = "#22c55e";
+                msg.textContent = "✅ " + data.message;
+                loadDocuments();
+            } catch {
+                msg.style.color = "#ef4444";
+                msg.textContent = "❌ Yükleme başarısız.";
+            }
+        });
+
+        // Soru sor
+        document.getElementById("ask-button").addEventListener("click", async function() {
+            const question = document.getElementById("question-input").value.trim();
+            if (!question) return;
+            const chatBox = document.getElementById("chat-box");
+            document.querySelector(".welcome-message") && document.querySelector(".welcome-message").remove();
+            chatBox.innerHTML += `<div class="chat-message user"><span>${question}</span></div>`;
+            document.getElementById("question-input").value = "";
+            chatBox.innerHTML += `<div class="chat-message bot" id="loading"><span>⏳ Düşünüyor...</span></div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+            try {
+                const res = await fetch(`${API}/ask`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ question })
+                });
+                const data = await res.json();
+                document.getElementById("loading").remove();
+                chatBox.innerHTML += `<div class="chat-message bot"><span>${data.answer}</span></div>`;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            } catch {
+                document.getElementById("loading").remove();
+                chatBox.innerHTML += `<div class="chat-message bot"><span>❌ Bir hata oluştu.</span></div>`;
+            }
+        });
+
+        // Enter tuşu ile gönder
+        document.getElementById("question-input").addEventListener("keydown", function(e) {
+            if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                document.getElementById("ask-button").click();
+            }
+        });
+
+        checkHealth();
+        loadDocuments();
+    </script>
+</body>
+</html>
