@@ -7,118 +7,133 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
+        :root {
+            --bg: #1e2a3a;
+            --sidebar-bg: #162030;
+            --card-bg: #162030;
+            --text: #ffffff;
+            --text-muted: #888;
+            --border: #ffffff15;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+        }
+
+        .light {
+            --bg: #f0f4f8;
+            --sidebar-bg: #e2e8f0;
+            --card-bg: #ffffff;
+            --text: #1e2a3a;
+            --text-muted: #64748b;
+            --border: #00000015;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+        }
+
         body {
-            background-color: #1e2a3a;
-            color: #ffffff;
+            background-color: var(--bg);
+            color: var(--text);
             font-family: 'Segoe UI', sans-serif;
             height: 100vh;
             overflow: hidden;
+            transition: background 0.3s, color 0.3s;
         }
 
-        .container {
-            display: flex;
-            height: 100vh;
-        }
+        .container { display: flex; height: 100vh; }
 
-        /* SOL PANEL */
         .sidebar {
             width: 300px;
-            background: #162030;
-            border-right: 1px solid #ffffff15;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border);
             display: flex;
             flex-direction: column;
             padding: 24px;
-            gap: 24px;
+            gap: 16px;
+            overflow-y: auto;
+            z-index: 1;
+            transition: background 0.3s;
         }
+
+        .sidebar-header { display: flex; align-items: center; gap: 10px; }
 
         .sidebar h1 {
             font-size: 1.8rem;
-            color: #ffffff;
+            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .sidebar p {
-            color: #888;
-            font-size: 0.85rem;
-            margin-top: 4px;
-        }
+        .sidebar p { color: var(--text-muted); font-size: 0.85rem; margin-top: 4px; }
 
-        .status {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.85rem;
-        }
+        .status { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; margin-top: 4px; }
 
-        .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background-color: #888;
-        }
-
+        .dot { width: 8px; height: 8px; border-radius: 50%; background-color: #888; }
         .dot.online { background-color: #22c55e; }
         .dot.offline { background-color: #ef4444; }
 
-        .divider {
-            border: none;
-            border-top: 1px solid #ffffff15;
-        }
+        .divider { border: none; border-top: 1px solid var(--border); }
 
-        .sidebar h2 {
-            font-size: 0.95rem;
-            color: #cbd5e1;
-            margin-bottom: 12px;
-        }
+        .sidebar h2 { font-size: 0.95rem; color: var(--text); margin-bottom: 12px; }
 
         .upload-box {
-            border: 2px dashed #ffffff30;
+            border: 2px dashed var(--border);
             border-radius: 12px;
             padding: 16px;
             text-align: center;
-            background: #1e2a3a;
+            background: var(--bg);
             margin-bottom: 8px;
+            transition: border-color 0.2s;
         }
 
-        .upload-box p {
-            color: #888;
-            font-size: 0.85rem;
-            margin-bottom: 10px;
-        }
+        .upload-box:hover { border-color: var(--accent); }
+        .upload-box p { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 10px; }
 
-        .upload-box button {
-            background: #3b82f6;
+        .btn {
+            background: var(--accent);
             color: white;
             border: none;
             padding: 8px 20px;
             border-radius: 8px;
             cursor: pointer;
             font-size: 0.85rem;
+            transition: background 0.2s;
         }
 
-        .upload-box button:hover { background: #2563eb; }
+        .btn:hover { background: var(--accent-hover); }
 
-        #upload-message {
+        #upload-message { font-size: 0.85rem; margin-top: 8px; }
+
+        #documents-list { list-style: none; color: var(--text-muted); font-size: 0.85rem; }
+        #documents-list li { padding: 5px 0; border-bottom: 1px solid var(--border); }
+
+        .theme-btn {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
             font-size: 0.85rem;
-            margin-top: 8px;
+            transition: all 0.2s;
         }
 
-        #documents-list {
-            list-style: none;
-            color: #888;
-            font-size: 0.85rem;
-        }
+        .theme-btn:hover { border-color: var(--accent); }
 
-        #documents-list li {
-            padding: 5px 0;
-            border-bottom: 1px solid #ffffff10;
-        }
-
-        /* SAĞ PANEL - SOHBET */
         .main {
             flex: 1;
             display: flex;
             flex-direction: column;
             padding: 24px;
+            position: relative;
+        }
+
+        #bg-canvas {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0.08;
+            pointer-events: none;
+            z-index: 0;
         }
 
         .chat-box {
@@ -128,86 +143,139 @@
             display: flex;
             flex-direction: column;
             gap: 16px;
+            position: relative;
+            z-index: 1;
         }
 
-        .chat-message.user {
-            text-align: right;
-        }
+        .chat-message.user { text-align: right; }
 
         .chat-message.user span {
-            background: #3b82f6;
+            background: var(--accent);
             padding: 10px 16px;
             border-radius: 16px 16px 4px 16px;
             display: inline-block;
             max-width: 70%;
+            color: white;
         }
 
         .chat-message.bot span {
-            background: #162030;
+            background: var(--card-bg);
             padding: 10px 16px;
             border-radius: 16px 16px 16px 4px;
             display: inline-block;
             max-width: 70%;
-            color: #cbd5e1;
+            color: var(--text);
+            line-height: 1.6;
         }
+
+        .chat-message.bot .copy-btn {
+            display: block;
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 2px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            margin-top: 4px;
+            transition: all 0.2s;
+        }
+
+        .chat-message.bot .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+        .timestamp { font-size: 0.7rem; color: var(--text-muted); margin-top: 4px; }
 
         .ask-input-box {
             display: flex;
             gap: 12px;
             align-items: flex-end;
             padding-top: 16px;
-            border-top: 1px solid #ffffff15;
+            border-top: 1px solid var(--border);
+            position: relative;
+            z-index: 1;
         }
 
         .ask-input-box textarea {
             flex: 1;
-            background: #162030;
-            border: 1px solid #ffffff20;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
             border-radius: 12px;
             padding: 12px;
-            color: #ffffff;
+            color: var(--text);
             font-size: 0.95rem;
             resize: none;
             height: 50px;
+            transition: border-color 0.2s;
         }
 
+        .ask-input-box textarea:focus { outline: none; border-color: var(--accent); }
+
         .ask-input-box button {
-            background: #3b82f6;
+            background: var(--accent);
             color: white;
             border: none;
             padding: 12px 24px;
             border-radius: 12px;
             cursor: pointer;
             font-size: 0.9rem;
+            transition: background 0.2s, opacity 0.2s;
         }
 
-        .ask-input-box button:hover { background: #2563eb; }
+        .ask-input-box button:hover { background: var(--accent-hover); }
+        .ask-input-box button:disabled { opacity: 0.5; cursor: not-allowed; }
 
         .welcome-message {
             text-align: center;
-            color: #888;
+            color: var(--text-muted);
             margin: auto;
+            z-index: 1;
+            animation: fadeIn 0.8s ease;
         }
 
-        .welcome-message h2 {
-            font-size: 1.5rem;
-            margin-bottom: 8px;
-            color: #cbd5e1;
+        .welcome-message h2 { font-size: 1.5rem; margin-bottom: 8px; color: var(--text); }
+
+        .typing span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            margin: 0 2px;
+            animation: bounce 1.2s infinite;
         }
+
+        .typing span:nth-child(2) { animation-delay: 0.2s; }
+        .typing span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-8px); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .chat-message { animation: fadeIn 0.3s ease; }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- SOL PANEL -->
         <div class="sidebar">
             <div>
-                <h1>DocuMind</h1>
+                <div class="sidebar-header">
+                    <canvas id="logo-canvas" width="36" height="36"></canvas>
+                    <h1>DocuMind</h1>
+                </div>
                 <p>Yerel yapay zeka ile doküman soru-cevap servisi</p>
-                <div class="status" style="margin-top: 8px;">
+                <div class="status">
                     <span class="dot" id="dot"></span>
                     <span id="status-text">Kontrol ediliyor...</span>
                 </div>
             </div>
+
+            <button class="theme-btn" onclick="toggleTheme()">🌙 Tema Değiştir</button>
 
             <hr class="divider">
 
@@ -216,7 +284,7 @@
                 <div class="upload-box">
                     <input type="file" id="file-input" accept=".pdf" hidden>
                     <p>PDF dosyası seç</p>
-                    <button onclick="document.getElementById('file-input').click()">Dosya Seç</button>
+                    <button class="btn" onclick="document.getElementById('file-input').click()">Dosya Seç</button>
                 </div>
                 <div id="upload-message"></div>
             </div>
@@ -231,24 +299,47 @@
             </div>
         </div>
 
-        <!-- SAĞ PANEL -->
         <div class="main">
+            <canvas id="bg-canvas"></canvas>
             <div class="chat-box" id="chat-box">
-                <div class="welcome-message">
+                <div class="welcome-message" id="welcome">
                     <h2>Merhaba! 👋</h2>
                     <p>Sol taraftan bir PDF yükleyin ve soru sormaya başlayın.</p>
                 </div>
             </div>
             <div class="ask-input-box">
                 <textarea id="question-input" placeholder="Sorunuzu buraya yazın..."></textarea>
-                <button id="ask-button">➤ Gönder</button>
+                <div style="display:flex; flex-direction:column; gap:8px;">
+                    <button id="ask-button">➤ Gönder</button>
+                    <button onclick="clearChat()" style="background:#334155; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer; font-size:0.8rem;">🗑 Temizle</button>
+                </div>
             </div>
         </div>
     </div>
-<script>
-        const API = "http://localhost:8000";
 
-        // Servis durumunu kontrol et
+    <script>
+        const API = "http://localhost:8000";
+        let isLight = false;
+
+        function toggleTheme() {
+            isLight = !isLight;
+            document.body.classList.toggle("light", isLight);
+            document.querySelector(".theme-btn").textContent = isLight ? "🌙 Koyu Tema" : "☀️ Açık Tema";
+        }
+
+        function clearChat() {
+            const chatBox = document.getElementById("chat-box");
+            chatBox.innerHTML = `<div class="welcome-message" id="welcome">
+                <h2>Merhaba! 👋</h2>
+                <p>Sol taraftan bir PDF yükleyin ve soru sormaya başlayın.</p>
+            </div>`;
+        }
+
+        function getTime() {
+            const now = new Date();
+            return now.getHours().toString().padStart(2, "0") + ":" + now.getMinutes().toString().padStart(2, "0");
+        }
+
         async function checkHealth() {
             try {
                 const res = await fetch(`${API}/health`);
@@ -263,7 +354,6 @@
             }
         }
 
-        // Dokümanları listele
         async function loadDocuments() {
             try {
                 const res = await fetch(`${API}/documents`);
@@ -277,14 +367,14 @@
             } catch {}
         }
 
-        // PDF yükle
         document.getElementById("file-input").addEventListener("change", async function() {
             const file = this.files[0];
             if (!file) return;
             const formData = new FormData();
             formData.append("file", file);
             const msg = document.getElementById("upload-message");
-            msg.textContent = "Yükleniyor...";
+            msg.style.color = "#888";
+            msg.textContent = "⏳ Yükleniyor...";
             try {
                 const res = await fetch(`${API}/upload`, { method: "POST", body: formData });
                 const data = await res.json();
@@ -297,16 +387,30 @@
             }
         });
 
-        // Soru sor
         document.getElementById("ask-button").addEventListener("click", async function() {
             const question = document.getElementById("question-input").value.trim();
             if (!question) return;
             const chatBox = document.getElementById("chat-box");
-            document.querySelector(".welcome-message") && document.querySelector(".welcome-message").remove();
-            chatBox.innerHTML += `<div class="chat-message user"><span>${question}</span></div>`;
+            const welcome = document.getElementById("welcome");
+            if (welcome) welcome.remove();
+
+            const time = getTime();
+            chatBox.innerHTML += `
+                <div class="chat-message user">
+                    <span>${question}</span>
+                    <div class="timestamp" style="text-align:right;">${time}</div>
+                </div>`;
             document.getElementById("question-input").value = "";
-            chatBox.innerHTML += `<div class="chat-message bot" id="loading"><span>⏳ Düşünüyor...</span></div>`;
+
+            const askBtn = document.getElementById("ask-button");
+            askBtn.disabled = true;
+
+            chatBox.innerHTML += `
+                <div class="chat-message bot" id="loading">
+                    <div class="typing"><span></span><span></span><span></span></div>
+                </div>`;
             chatBox.scrollTop = chatBox.scrollHeight;
+
             try {
                 const res = await fetch(`${API}/ask`, {
                     method: "POST",
@@ -315,21 +419,112 @@
                 });
                 const data = await res.json();
                 document.getElementById("loading").remove();
-                chatBox.innerHTML += `<div class="chat-message bot"><span>${data.answer}</span></div>`;
+                const answer = data.answer;
+                chatBox.innerHTML += `
+                    <div class="chat-message bot">
+                        <span>${answer}</span>
+                        <button class="copy-btn" onclick="navigator.clipboard.writeText(\`${answer.replace(/`/g, "'")}\`); this.textContent='✅ Kopyalandı'">📋 Kopyala</button>
+                        <div class="timestamp">${time}</div>
+                    </div>`;
                 chatBox.scrollTop = chatBox.scrollHeight;
             } catch {
                 document.getElementById("loading").remove();
                 chatBox.innerHTML += `<div class="chat-message bot"><span>❌ Bir hata oluştu.</span></div>`;
             }
+            askBtn.disabled = false;
         });
 
-        // Enter tuşu ile gönder
         document.getElementById("question-input").addEventListener("keydown", function(e) {
             if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
                 document.getElementById("ask-button").click();
             }
         });
+
+        // Logo animasyonu
+        const logoCanvas = document.getElementById("logo-canvas");
+        const lctx = logoCanvas.getContext("2d");
+        const logoPoints = [];
+        for (let i = 0; i < 12; i++) {
+            logoPoints.push({ angle: (i / 12) * Math.PI * 2 });
+        }
+        let logoRotation = 0;
+        function drawLogo() {
+            lctx.clearRect(0, 0, 36, 36);
+            const cx = 18, cy = 18, r = 14;
+            lctx.strokeStyle = "rgba(99, 102, 241, 0.5)";
+            lctx.lineWidth = 0.5;
+            for (let i = 0; i < logoPoints.length; i++) {
+                for (let j = i + 1; j < logoPoints.length; j++) {
+                    const x1 = cx + r * Math.cos(logoPoints[i].angle + logoRotation);
+                    const y1 = cy + r * Math.sin(logoPoints[i].angle + logoRotation);
+                    const x2 = cx + r * Math.cos(logoPoints[j].angle + logoRotation);
+                    const y2 = cy + r * Math.sin(logoPoints[j].angle + logoRotation);
+                    lctx.beginPath();
+                    lctx.moveTo(x1, y1);
+                    lctx.lineTo(x2, y2);
+                    lctx.stroke();
+                }
+            }
+            lctx.strokeStyle = "rgba(99, 102, 241, 0.8)";
+            lctx.lineWidth = 0.8;
+            lctx.beginPath();
+            lctx.arc(cx, cy, r, 0, Math.PI * 2);
+            lctx.stroke();
+            logoRotation += 0.003;
+            requestAnimationFrame(drawLogo);
+        }
+        drawLogo();
+
+        // Arka plan animasyonu
+        const canvas = document.getElementById("bg-canvas");
+        const ctx = canvas.getContext("2d");
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+        }
+        resizeCanvas();
+        window.addEventListener("resize", resizeCanvas);
+
+        const points = [];
+        for (let i = 0; i < 12; i++) {
+            points.push({ angle: (i / 12) * Math.PI * 2 });
+        }
+
+        let rotation = 0;
+        function drawAnimation() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const r = Math.min(canvas.width, canvas.height) * 0.35;
+
+            ctx.strokeStyle = "rgba(99, 102, 241, 1)";
+            ctx.lineWidth = 0.8;
+
+            for (let i = 0; i < points.length; i++) {
+                for (let j = i + 1; j < points.length; j++) {
+                    const x1 = cx + r * Math.cos(points[i].angle + rotation);
+                    const y1 = cy + r * Math.sin(points[i].angle + rotation);
+                    const x2 = cx + r * Math.cos(points[j].angle + rotation);
+                    const y2 = cy + r * Math.sin(points[j].angle + rotation);
+                    ctx.beginPath();
+                    ctx.moveTo(x1, y1);
+                    ctx.lineTo(x2, y2);
+                    ctx.stroke();
+                }
+            }
+
+            ctx.strokeStyle = "rgba(99, 102, 241, 1)";
+            ctx.lineWidth = 1.2;
+            ctx.beginPath();
+            ctx.arc(cx, cy, r, 0, Math.PI * 2);
+            ctx.stroke();
+
+            rotation += 0.003;
+            requestAnimationFrame(drawAnimation);
+        }
+        drawAnimation();
 
         checkHealth();
         loadDocuments();
