@@ -92,4 +92,15 @@ def delete_document(filename: str):
     if not os.path.exists(file_path):
         raise HTTPException(status_code=404, detail="Dosya bulunamadı.")
     os.remove(file_path)
+    
+    doc_id = filename.replace(".pdf", "")
+    try:
+        from app.rag import collection
+        ids = collection.get()["ids"]
+        ids_to_delete = [i for i in ids if i.startswith(doc_id)]
+        if ids_to_delete:
+            collection.delete(ids=ids_to_delete)
+    except:
+        pass
+    
     return {"message": f"{filename} silindi."}

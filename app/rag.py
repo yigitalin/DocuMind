@@ -26,7 +26,7 @@ def add_document(file_path: str, doc_id: str) -> None:
     for page in reader.pages:
         text += page.extract_text()
 
-    chunks = [text[i:i+500] for i in range(0, len(text), 500)]
+    chunks = [text[i:i+1000] for i in range(0, len(text), 1000)]
 
     embeddings = model.encode(chunks).tolist()
 
@@ -36,7 +36,7 @@ def add_document(file_path: str, doc_id: str) -> None:
         ids=[f"{doc_id}_{i}" for i in range(len(chunks))]
     )
 
-def search(query: str, n_results: int = 3) -> list:
+def search(query: str, n_results: int = 5) -> list:
     """
     Soruya en benzer doküman parçalarını ChromaDB'den bulur.
 
@@ -65,5 +65,5 @@ def ask(question: str) -> str:
         Ollama'nın ürettiği cevap metni
     """
     context = search(question)
-    prompt = f"Bağlam: {context}\n\nSoru: {question}\n\nCevap:"
+    prompt = f"Sen Türkçe konuşan yardımcı bir asistansın. Sadece Türkçe cevap ver. Aşağıdaki bağlamı kullanarak soruyu cevapla. Bağlam yoksa kendi bilginle cevap ver.\n\nBağlam: {context}\n\nSoru: {question}\n\nCevap:"
     return ask_ollama(prompt)
